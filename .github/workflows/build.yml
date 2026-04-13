@@ -25,6 +25,7 @@ jobs:
         run: |
           pip download --no-deps --no-binary :all: vnpy_ctp
           tar -xzf vnpy_ctp-*.tar.gz
+          rm vnpy_ctp-*.tar.gz
           mv vnpy_ctp-* vnpy_ctp_src
 
       - name: Build wheel
