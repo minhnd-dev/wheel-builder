@@ -1,0 +1,38 @@
+name: Build vnpy_ctp Wheel
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [ main ]
+
+jobs:
+  build-wheel:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install build tools
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y build-essential cmake libssl-dev
+          python -m pip install --upgrade pip
+          pip install build wheel setuptools
+
+      - name: Download vnpy_ctp source
+        run: |
+          pip download --no-deps --no-binary :all: vnpy_ctp
+          tar -xzf vnpy_ctp-*.tar.gz
+          mv vnpy_ctp-* vnpy_ctp_src
+
+      - name: Build wheel
+        working-directory: vnpy_ctp_src
+        run: python -m build --wheel
+
+      - name: Upload wheel artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: vnpy_ctp-wheel
+          path: vnpy_ctp_src/dist/*.whl
